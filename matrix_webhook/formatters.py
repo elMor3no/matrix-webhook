@@ -14,6 +14,21 @@ def grafana(data, headers):
     data["body"] = text
     return data
 
+def gitlab(data, headers):
+    """Pretty-print a grafana notification."""
+    text = ""
+    if "user_name" in data:
+        text = "User: " + data["user_name"] + "\n"
+    if "object_kind" in data:
+        text = text + "Make a " + data["object_kind"] +  "\n"
+    if "checkout_sha" in data:
+        text = text + "With the hash: " + data["checkout_sha"] + "\n\n"
+    if "commits" in data:
+        for match in data["commits"]:
+            text = text + "* " + match["message"]  + "\n\n"
+            text = text + "At " + match["timestamp"]  + "\n"
+    data["body"] = text
+    return data
 
 def github(data, headers):
     """Pretty-print a github notification."""
