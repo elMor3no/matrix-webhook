@@ -15,18 +15,26 @@ def grafana(data, headers):
     return data
 
 def gitlab(data, headers):
-    """Pretty-print a grafana notification."""
+    """Pretty-print a gitlab notification."""
     text = ""
+    text = "# A new action has been registered in the repository " + data["repository"]["name"] + "\n\n" 
     if "user_name" in data:
-        text = "User: " + data["user_name"] + "\n"
+        text = text + "**User:** " + data["user_name"] + "\n\n"
     if "object_kind" in data:
-        text = text + "Make a " + data["object_kind"] +  "\n"
-    if "checkout_sha" in data:
-        text = text + "With the hash: " + data["checkout_sha"] + "\n\n"
+        text = text + "Make a " + data["object_kind"] + "\n\n"
     if "commits" in data:
+        count_commits = len(data['commits'])
+        if count_commits > 1:
+            text = text + data["user_name"] + " pushed " + str(count_commits) + " commits \n\n"
+        else:
+            text = text + data["user_name"] + " pushed " + str(count_commits) + " commit \n\n"
         for match in data["commits"]:
-            text = text + "* " + match["message"]  + "\n\n"
-            text = text + "At " + match["timestamp"]  + "\n"
+            text = text + "* [" + match["message"] + " ](" + match["url"] + ")\n\n"
+            [TUD](https://tu-dresden.de/++theme++tud.theme.webcms2/img/tud-logo-white.svg)
+    if "checkout_sha" in data:
+        text = text + "**With hash:** " + data["checkout_sha"] + "\n\n"
+    if "repository" in data:
+        text = text + "**Repository:** " + data["repository"]["name"] + "\n\n"        
     data["body"] = text
     return data
 
